@@ -1,0 +1,2032 @@
+{
+	"info": {
+		"_postman_id": "6305bed1-3f3d-4f2a-84e7-ae27e1c4dcbe",
+		"name": "QA ENV",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8807a247-82bc-440d-b2a9-9d43484c7d1f",
+								"exec": [
+									"// Login (POST {{Auth}}/qa/auth/login)",
+									"// Validate response and save id_token to environment variable `id_token`",
+									"",
+									"pm.test(\"Login: status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Login: response is valid JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"let json;",
+									"try {",
+									"    json = pm.response.json();",
+									"} catch (e) {",
+									"    json = null;",
+									"}",
+									"",
+									"// Extract id_token",
+									"const idToken = json?.data?.id_token;",
+									"",
+									"// Validate id_token exists",
+									"pm.test(\"Login: id_token exists\", function () {",
+									"    pm.expect(idToken).to.be.a(\"string\").and.not.be.empty;",
+									"});",
+									"",
+									"// Save id_token to environment variable",
+									"if (idToken) {",
+									"    pm.environment.set(\"id_token\", idToken);",
+									"    console.log(\"id_token saved successfully\");",
+									"}",
+									"",
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "74c0bbec-02b4-4ef1-a09d-d17a8b892c8b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "6217fdfd-cecd-469a-8668-f0579ce9a641",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "cache-control",
+								"value": "no-store"
+							},
+							{
+								"key": "content-type",
+								"value": "application/x-amz-json-1.1"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "x-amz-target",
+								"value": "AWSCognitoIdentityProviderService.InitiateAuth"
+							},
+							{
+								"key": "x-amz-user-agent",
+								"value": "aws-amplify/5.0.4 js"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"amar+4@niural.com\",\n    \"password\": \"Asdf123!@#\"\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": "https://i6ll5hrk08.execute-api.us-east-1.amazonaws.com/qa/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "User Role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "412e6c13-5f8b-46f2-97e8-da9968463ddc",
+								"exec": [
+									"// Parse response",
+									"let json;",
+									"try {",
+									"    json = pm.response.json();",
+									"} catch (e) {",
+									"    json = null;",
+									"}",
+									"",
+									"// Extract role_id from the first element of data array",
+									"const roleId = json?.data?.[0]?.role_id;",
+									"",
+									"// Validate role_id exists",
+									"pm.test(\"User-Role: role_id exists\", function () {",
+									"    pm.expect(roleId).to.be.a(\"string\").and.not.be.empty;",
+									"});",
+									"",
+									"// Save role_id to environment variable",
+									"if (roleId) {",
+									"    pm.environment.set(\"role_id\", roleId);",
+									"    console.log(\"role_id saved successfully:\", roleId);",
+									"}",
+									"",
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// Extract employer_id from the first element of data array",
+									"const employerId = json?.data?.[0]?.employer_id;",
+									"",
+									"// Validate employer_id exists",
+									"pm.test(\"User-Role: employer_id exists\", function () {",
+									"    pm.expect(employerId).to.be.a(\"string\").and.not.be.empty;",
+									"});",
+									"",
+									"// Save employer_id to environment variable",
+									"if (employerId) {",
+									"    pm.environment.set(\"employer_id\", employerId);",
+									"    console.log(\"employer_id saved successfully:\", employerId);",
+									"} else {",
+									"    console.error(\"employer_id not found in the first element of the data array\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d22d5cba-237b-4e5a-95d4-0892000cc803",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "a0fff4c5-20c6-4467-b4e7-97aa1d8f5816",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\"}"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							}
+						],
+						"url": "https://nvvbbcice1.execute-api.us-east-1.amazonaws.com/qa/user-roles"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "793487f9-8775-4921-bf90-63150860ccfa",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "fe239a9c-b9d3-4f5b-89be-9046bc54abd1",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "4119eff4-6846-4681-901f-93553da161bc",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json; charset=UTF-8"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"deviceInfo\":{\"deviceKey\":\"us-east-1_71bb3463-55e6-475d-81c2-4ada8676f242\",\"deviceGroupKey\":\"acb78bfe-0434-4fde-81b1-534e6f564768\",\"devicePassword\":\"QuOvZroZYiEkDqb8pvZm13KtydIHG/3dTK+LRsQv4eNzibMifjLwIw==\"},\"refreshToken\":\"eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.PB91N7iUbH984ouNi7sS9O_jKqa4_rSSrkgpZfZXeRRSrXJ48eF24uiTs4Ba2IfiBqCQ_qyqZZffEIkadqzmXqBh5jRBMcZHRvZp1FfuU1iFOxT5TtXV29YBwWsw-H7MfNYvU9E80FrJcydHkSgQ2y0Erhzp6ItwshSUlb_HsUH5010Ev2XfuHeek8xEoCfSquqfNGEMxh3bn3a7P8vMrTgKjDd_H30QOBK_uVvfMauFRpcq-yrvzS1hXBLOoUh8sAHppXAECVIFKMTtZ_S7ezIbCX6ABgtyQaphhJMJjY_34-uUjF_tfN4eFU39b_rL3J5wVgjCDHQB_8XS5mypww.cUnR0XXYZRe4K4MQ.NhqSBc9zoaAmscSiR6bCk5C2UGYOIaCYJOTO5aBH5-s266uYzEvWWaXW-ufTFXVA2OA0NNaTBJjSsS663N6gSdS41Jr8PK2duVN5d6bpOByGxUSPjS5P69-uwCDImqrlnjq4DpouH4Q5ejWA1cZOir-SN8DptLLtV8BURnwu3uh985ERN8zMx1bMewiNm1PpiXNDNQOQH8kD13huXEnuJWqwtBlnbPomeAMQKz54W0yf9lzauBw6vlgrEc5H3V-9L-tGrBNe5N5yjBDttgXO4a-hNXlA5_br5FKPs3HGztyZLteaZSUYjQepNkbGkIrWC5yMgoerZtB44TzGZkjHSlvRBDyjgxCLumpMGHgbLYA_Wj9_9Nq0qbLCGaMV3saKrNkHdM22H1yEjmpd8_U3kUwaXalJPaJ6eVOVwKJB7ekBa7zmQ0ohyXrl5t4LGloKVAXdsV-bSlTi4YGi0reYjwKWCwrAzO9sqjJb1QWVLBjmD9lGf5MA3J7kbWsi-9An5lTT9tG0J1v3eeH1G_YSqSJworuO3g5DUUVtaf0j2EhUZHU6uyryutPvgBLjIoLD9t5HaAKEYiyXwv1SMedSYie6lES8ZaUZCN02sP77wfED0nvxefLUxMdmpLb0wZJbD1Uwg6b2bl0AHm8FQMLqFcbp5U34H_zatn_ziCSK2_ICX9jCjbLH6AYDbF5g0WYqwDrgThvkplBscv9SDbx6ZzaxrFSdK0Ngm8jcZBuUlPtI-46L7y5uhvKFdcWek-qu3d7dR9FSblG_8jpPcvo4KWa7LCRinrh27rsmoKHg9iP_Wua_gn940CoKXlC0EsE3wXiLO8Cm4v1m8ZTWdYHJya5GZmtFbyNBXNWhKYG99O6Gsn44R4bjVBXpTqDVTJA0aLrPLlegmC6zrnSyxi9Iy14Q-e5KSKJftUimdRApB8-v0fNxv4y0N911LYT2dy3_R3TOhk5XWLrdET_Iw79bUwqtJ-auWOpy0mP2_IEW1vtgZZKLpVUBmbH_CDPKmnhtkdluJYPUruOy6pQaHfAW5hFQwD-efNgAWtWbjR3VcAh1prJ3nUsL1qrYjlOdVWv_9SxgfpSyw_YHJ2OJ4nY8RACKMPTh-UFmVt0SoAc8R1NyFrMyXhGEQp1X2LSebzQtqzjnwO3ClA0wqa-DtpmiIKdZxxsvko5G2PnIqf1X9dsBkGHq0DpTsMlOgeiXYKvRIKJDR0D46pvzrZ1jXAP7ojTY34qM9EsLztiVJPv3p25XroAzUlRv4gse9ZW18qVCWUnoXwRiAypGQJF1kLQ9Sh77Xmfz36TAdDe--j3lEgMXq3KJAtx7OqpS_9G5q5D4IGTXQtI5er6FPqVr.Kh1KUUFmDXYtwYLlJeNeqw\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://i6ll5hrk08.execute-api.us-east-1.amazonaws.com/qa/auth/token/refresh"
+					},
+					"response": []
+				}
+			],
+			"id": "69522a5a-938f-4e19-ba88-45d9cac00642"
+		},
+		{
+			"name": "Niural Pay",
+			"item": [
+				{
+					"name": "Vendors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4e3bd9cf-d904-4c9a-a62f-304422398cc7",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// 1. Parse the JSON response",
+									"const json = pm.response.json();",
+									"",
+									"// 2. Access the 'items' array inside 'data'",
+									"const vendorList = json.data?.items;",
+									"",
+									"if (Array.isArray(vendorList)) {",
+									"    // 3. Get the count",
+									"    const vendorCount = vendorList.length;",
+									"    ",
+									"    // 4. Create the formatted message",
+									"    const resultMessage = \"Total Vendors :- \" + vendorCount;",
+									"",
+									"    // 5. Run the Postman Test",
+									"    pm.test(resultMessage, function () {",
+									"        pm.expect(vendorCount).to.be.a(\"number\");",
+									"        pm.expect(vendorCount).to.be.at.least(1, \"The vendor list is empty\");",
+									"    });",
+									"",
+									"    // 6. Log and save for use in other requests",
+									"    console.log(resultMessage);",
+									"    pm.environment.set(\"total_vendor_count\", vendorCount);",
+									"",
+									"} else {",
+									"    pm.test(\"Error: 'data.items' is missing or not an array\", function () {",
+									"        pm.expect.fail(\"Check the API response structure.\");",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d7b9ca8c-d11d-4066-b9f0-ab8421ec3511",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "c7ad7fd6-1b25-4955-8a7b-6c4643d53a21",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"user-agent": true
+						}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": "https://nvvbbcice1.execute-api.us-east-1.amazonaws.com/qa/vendors"
+					},
+					"response": []
+				},
+				{
+					"name": "AP - Bills",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f9f5481e-ea22-4a8b-add3-5aba47e589ef",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e51b0266-bf5c-4c73-93ea-ae62e60a2a85",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// 1. Parse the JSON response",
+									"const json = pm.response.json();",
+									"",
+									"// 2. Access the 'items' array inside 'data'",
+									"const invoiceList = json.data?.items;",
+									"",
+									"if (Array.isArray(invoiceList)) {",
+									"    // 3. Get the count of invoices",
+									"    const invoiceCount = invoiceList.length;",
+									"    ",
+									"    // 4. Create the formatted result message",
+									"    const resultMessage = \"Total Invoices :- \" + invoiceCount;",
+									"",
+									"    // 5. Run the Postman Test",
+									"    pm.test(resultMessage, function () {",
+									"        pm.expect(invoiceCount).to.be.a(\"number\");",
+									"        pm.expect(invoiceCount).to.be.at.least(1, \"No invoices found in the list\");",
+									"    });",
+									"",
+									"    // 6. Log the output and save the count to environment",
+									"    console.log(resultMessage);",
+									"    pm.environment.set(\"total_invoice_count\", invoiceCount);",
+									"",
+									"    // OPTIONAL: Save the first invoice_id for the next API call",
+									"    if(invoiceCount > 0) {",
+									"        const firstInvoiceId = invoiceList[0].invoice_id;",
+									"        pm.environment.set(\"invoice_id\", firstInvoiceId);",
+									"        console.log(\"First Invoice ID saved:\", firstInvoiceId);",
+									"    }",
+									"",
+									"} else {",
+									"    pm.test(\"Error: 'data.items' not found or is not an array\", function () {",
+									"        pm.expect.fail(\"Check if the API returned a valid list of invoices.\");",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "58bc992c-77fa-45a6-a84d-ba753453ebc2",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "Authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "Referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							}
+						],
+						"url": {
+							"raw": "https://q6iy3e4rdf.execute-api.us-east-1.amazonaws.com/qa/invoices?limit=400&invoice_type=VENDOR_INVOICE",
+							"protocol": "https",
+							"host": [
+								"q6iy3e4rdf",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"qa",
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "400",
+									"uuid": "a06fe059-a3ad-4c87-9587-d495cbcc0f92"
+								},
+								{
+									"key": "invoice_type",
+									"value": "VENDOR_INVOICE",
+									"uuid": "b4a4a7b4-3ec1-4c24-9934-156ca671abcf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Customers",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "afe4c1d6-6c45-4528-8210-cddfdf366381",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "99974f10-45fd-4009-920a-86e1aaa74b9f",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// 1. Parse the JSON response",
+									"const json = pm.response.json();",
+									"",
+									"// 2. Access the 'items' array inside 'data'",
+									"const customerList = json.data?.items;",
+									"",
+									"if (Array.isArray(customerList)) {",
+									"    // 3. Get the count of customers",
+									"    const customerCount = customerList.length;",
+									"    ",
+									"    // 4. Create the formatted result message",
+									"    const resultMessage = \"Total Customers :- \" + customerCount;",
+									"",
+									"    // 5. Run the Postman Test",
+									"    pm.test(resultMessage, function () {",
+									"        pm.expect(customerCount).to.be.a(\"number\");",
+									"        pm.expect(customerCount).to.be.at.least(1, \"No customers found in the list\");",
+									"    });",
+									"",
+									"    // 6. Log the output and save the count to environment",
+									"    console.log(resultMessage);",
+									"    pm.environment.set(\"total_customer_count\", customerCount);",
+									"",
+									"    // OPTIONAL: Save the first customer_id for use in the next request",
+									"    if(customerCount > 0) {",
+									"        const firstCustomerId = customerList[0].customer_id;",
+									"        pm.environment.set(\"customer_id\", firstCustomerId);",
+									"        console.log(\"First Customer ID saved:\", firstCustomerId);",
+									"    }",
+									"",
+									"} else {",
+									"    pm.test(\"Error: 'data.items' not found or is not an array\", function () {",
+									"        pm.expect.fail(\"Check if the API returned a valid list of customers.\");",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "803011ad-0379-4628-8a0c-a746d80dcd51",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "Authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "Referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							}
+						],
+						"url": "https://kv15f21e45.execute-api.us-east-1.amazonaws.com/qa/ar-customers"
+					},
+					"response": []
+				},
+				{
+					"name": "AR - Invoices",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0e37d2cb-3c60-4d08-b6fb-5e11e21dba92",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2f498b32-fb88-4eb7-84f8-c7ab2355f10a",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// 1. Parse the JSON response",
+									"const json = pm.response.json();",
+									"",
+									"// 2. Access the 'items' array inside 'data'",
+									"const invoiceList = json.data?.items;",
+									"",
+									"if (Array.isArray(invoiceList)) {",
+									"    // 3. Count how many items actually contain an 'invoice_number'",
+									"    // This ensures we only count valid invoice records",
+									"    const invoiceNumberCount = invoiceList.filter(item => item.invoice_number).length;",
+									"    ",
+									"    // 4. Create the formatted result message",
+									"    const resultMessage = \"Total Invoice Numbers :- \" + invoiceNumberCount;",
+									"",
+									"    // 5. Run the Postman Test",
+									"    pm.test(resultMessage, function () {",
+									"        pm.expect(invoiceNumberCount).to.be.a(\"number\");",
+									"        pm.expect(invoiceNumberCount).to.be.at.least(1, \"No invoice numbers found in the response\");",
+									"    });",
+									"",
+									"    // 6. Log the output and save to environment",
+									"    console.log(resultMessage);",
+									"    pm.environment.set(\"total_invoice_no_count\", invoiceNumberCount);",
+									"",
+									"    // Save the first invoice_number for future use",
+									"    if(invoiceNumberCount > 0) {",
+									"        pm.environment.set(\"last_invoice_no\", invoiceList[0].invoice_number);",
+									"    }",
+									"",
+									"} else {",
+									"    pm.test(\"Error: 'data.items' missing\", function () {",
+									"        pm.expect.fail(\"Response structure is not as expected.\");",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "94e0a38e-9647-4fe1-aa0d-b511f7a494bd",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "Authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "Referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							}
+						],
+						"url": "https://kv15f21e45.execute-api.us-east-1.amazonaws.com/qa/ar-invoices"
+					},
+					"response": []
+				},
+				{
+					"name": "Niural Pay - Users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3392614c-e623-4227-8db6-33da9e1b70e0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3391ee23-3b34-4fb5-85ff-150ab51a3b30",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "2fa2f965-fcb9-4dcb-ad83-4108686c2c34",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "Authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "Referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							}
+						],
+						"url": "https://nvvbbcice1.execute-api.us-east-1.amazonaws.com/qa/admin-users"
+					},
+					"response": []
+				},
+				{
+					"name": "Niural Pay - Policies",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6d763c88-98a2-4e82-af44-c298f23af76e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7b059d71-e55e-4842-ab29-9077e6542ab0",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "7e77333b-cb73-40a5-858b-2f75a4caf1ad",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "Authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "Referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							}
+						],
+						"url": "https://nvvbbcice1.execute-api.us-east-1.amazonaws.com/qa/employers/{{employer_id}}/approval-policy"
+					},
+					"response": []
+				},
+				{
+					"name": "Niural Pay - Department",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "12e8b4a9-5a62-4bf3-b067-1d003f7fafe9",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "22a2473b-9fae-41e1-ad55-2a9e1d30c561",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "35ab8dcc-cc7d-49ca-bf35-ee79fcfdc6fe",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "Authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "Referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							}
+						],
+						"url": {
+							"raw": "https://kv15f21e45.execute-api.us-east-1.amazonaws.com/qa/niural-pay-departments?includeInactive=true",
+							"protocol": "https",
+							"host": [
+								"kv15f21e45",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"qa",
+								"niural-pay-departments"
+							],
+							"query": [
+								{
+									"key": "includeInactive",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Niural Pay - Entities",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7521b8c9-c3eb-4752-9bc8-1e92544c46a1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7978b8ea-475b-47d8-a3c7-f080bd1456f9",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "b3cf9db5-0092-4899-b43a-cb9ed381a0c9",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "Authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "Referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							}
+						],
+						"url": {
+							"raw": "https://kv15f21e45.execute-api.us-east-1.amazonaws.com/qa/niural-pay-entities?includeInactive=true",
+							"protocol": "https",
+							"host": [
+								"kv15f21e45",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"qa",
+								"niural-pay-entities"
+							],
+							"query": [
+								{
+									"key": "includeInactive",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "8590ef77-2811-4885-b28f-73cef209a1a3"
+		},
+		{
+			"name": "Payroll",
+			"item": [
+				{
+					"name": "New Request",
+					"id": "e6ac0663-8a66-405f-93f6-55a3b4a69c0a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json; charset=UTF-8"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"settlement\":\"INSTANT\",\"totalGrossPay\":28772.78,\"startDate\":\"2027-06-01\",\"errorStatus\":[{\"errorMessage\":\"No error\",\"errorCode\":0}],\"totalEmployees\":3,\"settlementDate\":\"2027-07-02\",\"totalDirectDeposit\":31956.32,\"totalAdjustmentAmount\":0,\"SK\":\"payroll#ae312d1c-95c7-4eec-9c21-ed1b843ee127\",\"taxComplianceEnabled\":true,\"employerId\":\"a252c7be-8259-4eb9-9d14-cdb75eace075\",\"employeeType\":\"EMPLOYEE\",\"totalBonusAmount\":0,\"totalPaycheckTipAmount\":0,\"totalAmount\":29772.78,\"employerTaxSetting\":{\"CA\":{\"numberOfEmployees\":2,\"accounts\":{\"06EddAccountNumber\":\"\"},\"overrideRate\":{\"06_000_0000_ER_SUTA_000\":3.4,\"06_000_0000_ER_SUTA_SC_004\":0.1},\"taxJurisdictions\":{}},\"NY\":{\"numberOfEmployees\":4,\"accounts\":{\"36PaidFamilyLeavePflInsurance\":\"\",\"36StateDisabilityInsuranceSdi\":\"\",\"36NyIdentificationNo\":\"\",\"36Promptax\":\"\",\"36EmployerRegistrationNumber\":\"\"},\"overrideRate\":{\"36_000_0000_ER_ECET_000\":0,\"36_000_0000_ER_SUTA_000\":3.4,\"36_000_0000_ER_SUTA_SC_025\":0.075},\"taxJurisdictions\":{}}},\"totalWorkerCompAmount\":0,\"createdDate\":\"2026-02-20T00:42:36.580043+00:00\",\"PK\":\"org#a252c7be-8259-4eb9-9d14-cdb75eace075\",\"isPeoPayroll\":false,\"syncedToQuickbooks\":false,\"createdBy\":{\"userRole\":\"ORG_OWNER\",\"fullName\":\"Qa Main Employer\",\"userType\":\"EMPLOYER\",\"roleId\":\"98cc2bfa-da37-4d61-8b23-4d0bab771c6d\",\"userScopeId\":\"a252c7be-8259-4eb9-9d14-cdb75eace075\",\"email\":\"amar+4@niural.com\",\"username\":\"abb9e56d-fca5-4c88-8ae6-dea5ee8e7d7b\"},\"payrollRunParameters\":{\"payDate\":\"2027-07-02\",\"payPeriodsPerYear\":12,\"payPeriodNumber\":7},\"updatedDate\":\"2026-02-20T00:52:35.730788+00:00\",\"totalPayByCheck\":0,\"payDateDeadline\":\"2027-06-29\",\"metadata\":{},\"payrollStatus\":\"DRAFT\",\"totalEmployeeBenefitAdjustment\":0,\"totalCommissionAmount\":0,\"updatedBy\":{\"userRole\":\"ORG_OWNER\",\"fullName\":\"Qa Main Employer\",\"userType\":\"EMPLOYER\",\"roleId\":\"98cc2bfa-da37-4d61-8b23-4d0bab771c6d\",\"userScopeId\":\"a252c7be-8259-4eb9-9d14-cdb75eace075\",\"email\":\"amar+4@niural.com\",\"username\":\"abb9e56d-fca5-4c88-8ae6-dea5ee8e7d7b\"},\"allowDeductionAndContribution\":true,\"payrollCycle\":\"REGULAR\",\"transactionStamp\":[{\"schemaVersion\":\"v1\",\"failedTransactions\":0,\"transactionType\":\"PayCalc\",\"calcDateTime\":\"2026-02-20T00:52:34Z\",\"steVersion\":\"2026.2.3.5-SNAPSHOT\",\"totalTransactions\":3}],\"payDate\":\"2027-07-02\",\"endDate\":\"2027-06-30\",\"paymentMechanism\":\"INSTANT\",\"offCyclePaymentOption\":\"FULL_PAYMENT\",\"currency\":{\"currencySymbol\":\"$\",\"currencyName\":\"United States Dollar\",\"currencyCountry\":\"US\",\"currencyCode\":\"USD\"},\"payrollId\":\"ae312d1c-95c7-4eec-9c21-ed1b843ee127\",\"taxNotCollected\":{\"totalAmount\":17.58,\"items\":[{\"uniqueTaxId\":\"36-000-0000-FLI-000\",\"locationName\":\"New York\",\"amount\":14.98,\"employeeId\":\"0b5cfcca-6ddd-459b-88b6-5375a9a75467\",\"description\":\"New York Paid Family Leave Insurance\",\"employeeFullName\":\"Raghu Nath Katariya\",\"employeeTotal\":14.98,\"employerTotal\":0,\"locationType\":\"STATE\"},{\"uniqueTaxId\":\"36-000-0000-SDI-000\",\"locationName\":\"New York\",\"amount\":2.6,\"employeeId\":\"0b5cfcca-6ddd-459b-88b6-5375a9a75467\",\"description\":\"New York SDI\",\"employeeFullName\":\"Raghu Nath Katariya\",\"employeeTotal\":2.6,\"employerTotal\":0,\"locationType\":\"STATE\"}]},\"totalOvertimeAmount\":0,\"categorizedBenefitsSum\":{},\"totalOwnersDraw\":1000,\"calculationDate\":\"2026-02-20T00:52:35.724894+00:00\",\"totalWithdrawalAmount\":31956.32,\"benefitBreakdownSummary\":{\"debitAdjusted\":{},\"debited\":{},\"notCollected\":{},\"invoiced\":{}},\"payrollPreference\":{\"firstPayDate\":\"2026-03-02\",\"nextPayrollDeadline\":\"2027-06-28\",\"workWeekStartDay\":\"Sunday\",\"nextStartDate\":\"2027-06-01\",\"payPeriodNumber\":7,\"originalNextPayDate\":\"2027-07-05\",\"nextPayDate\":\"2027-07-02\",\"payDateMechanism\":\"DAY_OF_WEEK\",\"payFrequency\":\"MONTHLY\",\"nextEndDate\":\"2027-06-30\",\"payPeriodEndDay\":31,\"businessDaysUntilPayment\":null},\"taxBreakdownSummary\":{\"employeeTakeHome\":26272.97,\"companyPayment\":31973.9,\"imputedIncome\":0,\"companyBenefit\":0,\"garnishment\":0,\"employeeBenefit\":0,\"totalEmployeeBenefitAdjustment\":0,\"companyReimbursement\":0,\"advancePayment\":0,\"debitedBenefit\":0,\"employeeTax\":3499.81,\"ownersDraw\":1000,\"reimbursement\":0,\"items\":[{\"uniqueTaxId\":\"00-000-0000-ER_FICA-000\",\"locationName\":\"Federal\",\"hasApplicableRate\":false,\"percentage\":6.2,\"taxDescription\":\"Employer Social Security Tax\",\"employeeTax\":0,\"taxLabel\":\"ER_FICA\",\"companyTax\":1783.91,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"FEDERAL\"},{\"uniqueTaxId\":\"00-000-0000-ER_MEDI-000\",\"locationName\":\"Federal\",\"hasApplicableRate\":false,\"percentage\":1.45,\"taxDescription\":\"Employer Medicare Tax\",\"employeeTax\":0,\"taxLabel\":\"ER_MEDI\",\"companyTax\":417.21,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"FEDERAL\"},{\"uniqueTaxId\":\"36-000-975772-CITY-000\",\"locationName\":\"New York\",\"hasApplicableRate\":false,\"percentage\":3.04,\"taxDescription\":\"New York City Tax\",\"employeeTax\":812.87,\"taxLabel\":\"CITY\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"LOCAL\"},{\"uniqueTaxId\":\"00-000-0000-FICA-000\",\"locationName\":\"Federal\",\"hasApplicableRate\":false,\"percentage\":6.2,\"taxDescription\":\"Social Security Tax\",\"employeeTax\":687.77,\"taxLabel\":\"FICA\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"FEDERAL\"},{\"uniqueTaxId\":\"00-000-0000-FIT-000\",\"locationName\":\"Federal\",\"hasApplicableRate\":false,\"percentage\":12.35,\"taxDescription\":\"Federal Income Tax\",\"employeeTax\":1176.33,\"taxLabel\":\"FIT\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"FEDERAL\"},{\"uniqueTaxId\":\"00-000-0000-MEDI-000\",\"locationName\":\"Federal\",\"hasApplicableRate\":false,\"percentage\":1.45,\"taxDescription\":\"Medicare Tax\",\"employeeTax\":160.85,\"taxLabel\":\"MEDI\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"FEDERAL\"},{\"uniqueTaxId\":\"36-000-0000-FLI-000\",\"locationName\":\"New York\",\"hasApplicableRate\":false,\"percentage\":0.43,\"taxDescription\":\"New York Paid Family Leave Insurance\",\"employeeTax\":14.98,\"taxLabel\":\"FLI\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"STATE\",\"info\":\"Niural does not handle TDI payments since these are sent to private TDI insurance carriers obtained by your company.\\n                We will record these payments in payroll reports, however, this amount will stay in your bank account so that you can pass this along to your insurance carrier.\"},{\"uniqueTaxId\":\"36-000-0000-SDI-000\",\"locationName\":\"New York\",\"hasApplicableRate\":false,\"percentage\":0.5,\"taxDescription\":\"New York SDI\",\"employeeTax\":2.6,\"taxLabel\":\"SDI\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"STATE\",\"info\":\"Niural does not handle TDI payments since these are sent to private TDI insurance carriers obtained by your company.\\n                We will record these payments in payroll reports, however, this amount will stay in your bank account so that you can pass this along to your insurance carrier.\"},{\"uniqueTaxId\":\"36-000-0000-SIT-000\",\"locationName\":\"New York\",\"hasApplicableRate\":false,\"percentage\":4.04,\"taxDescription\":\"New York State Tax\",\"employeeTax\":140.18,\"taxLabel\":\"SIT\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"STATE\"},{\"uniqueTaxId\":\"06-000-0000-SDI-000\",\"locationName\":\"California\",\"hasApplicableRate\":false,\"percentage\":1.3,\"taxDescription\":\"California SDI\",\"employeeTax\":99.14,\"taxLabel\":\"SDI\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"STATE\"},{\"uniqueTaxId\":\"06-000-0000-SIT-000\",\"locationName\":\"California\",\"hasApplicableRate\":false,\"percentage\":5.31,\"taxDescription\":\"California State Tax\",\"employeeTax\":405.09,\"taxLabel\":\"SIT\",\"companyTax\":0,\"applicableCompanyTax\":0,\"applicableCompanyRate\":0,\"locationType\":\"STATE\"}],\"companyTax\":2201.12},\"employeesData\":[{\"grossPay\":17679.66,\"totalPay\":18679.66,\"additionalEarnings\":[],\"customEarnings\":[],\"totalAdditionalEarnings\":0,\"totalCustomEarnings\":0,\"benefits\":[],\"salaryBreakdown\":[{\"endDate\":\"2027-06-30\",\"compensationAmount\":102,\"businessDays\":22,\"baseSalary\":17679.66,\"regularHours\":173.33,\"hourlyRate\":102,\"startDate\":\"2027-06-01\",\"compensationType\":\"HOURLY\"}],\"regularHoursPerWeek\":[],\"currency\":{\"currencySymbol\":\"$\",\"currencyName\":\"United States Dollar\",\"currencyCountry\":\"US\",\"currencyCode\":\"USD\"},\"overtimes\":[],\"employeeType\":\"EMPLOYEE\",\"employeeId\":\"dd4ee773-a251-4f6d-9508-5d8b97914e68\",\"firstName\":\"Regression\",\"lastName\":\"Employee\",\"approvedExpenses\":[],\"totalApprovedExpenses\":0,\"approvedAllowances\":[],\"totalApprovedAllowances\":0,\"reimbursement\":0,\"compensationAmount\":102,\"compensationType\":\"HOURLY\",\"payrollStatus\":\"DRAFT\",\"baseSalary\":17679.66,\"regularHours\":173.33,\"hourlyRate\":102,\"prorated\":false,\"payBy\":\"DIRECT_DEPOSIT\",\"payByOptions\":[\"DIRECT_DEPOSIT\"],\"payDate\":\"2027-07-02\",\"startDate\":\"2027-06-01\",\"endDate\":\"2027-06-30\",\"homeAddress\":{\"zipcode\":\"11228\",\"country\":{\"name\":\"United States\",\"iso2\":\"US\"},\"state\":{\"name\":\"New York\",\"iso2\":\"NY\"},\"locationCodeDetails\":{\"locationCode\":\"36-047-975772\",\"locationCodeFull\":\"STATE:36-CNTY:047-CITY:975772\",\"jurisdictions\":[{\"name\":\"New York\",\"steCodeType\":\"CITY\",\"steCode\":\"975772\"},{\"name\":\"Kings\",\"steCodeType\":\"CNTY\",\"steCode\":\"047\"},{\"name\":\"New York\",\"steCodeType\":\"STATE\",\"steCode\":\"36\"}]},\"addressLine1\":\"8787 Bald Hill LaneBrooklyn, NY 11228\",\"city\":\"NY\"},\"companyAddress\":{\"zipcode\":\"10003\",\"country\":{\"name\":\"United States\",\"iso2\":\"US\"},\"state\":{\"name\":\"New York\",\"iso2\":\"NY\"},\"addressLine1\":\"242 Greene St, New York, NY 10003, USA\",\"city\":\"New York\"},\"payrollCycle\":\"REGULAR\",\"offCyclePaymentOption\":\"FULL_PAYMENT\",\"workState\":{\"name\":\"New York\",\"iso2\":\"NY\"},\"rateCode\":{\"description\":\"Unknown\",\"policyFee\":0,\"rateCode\":\"9999\",\"year\":\"2026\",\"invoiceRate\":0},\"isPartnerOrOwner\":true,\"isGarnishmentSkipped\":false,\"hasTimesheet\":false,\"payFrequency\":\"MONTHLY\",\"weekStartDate\":\"2027-05-30\",\"ownersDraw\":{\"amount\":1000,\"frequency\":\"PER_PAYCHECK\"},\"timeOff\":[],\"totalTimeOffHours\":0},{\"grossPay\":3466.6,\"totalPay\":3466.6,\"additionalEarnings\":[],\"customEarnings\":[],\"totalAdditionalEarnings\":0,\"totalCustomEarnings\":0,\"benefits\":[],\"salaryBreakdown\":[{\"endDate\":\"2027-06-30\",\"compensationAmount\":20,\"businessDays\":22,\"baseSalary\":3466.6,\"regularHours\":173.33,\"hourlyRate\":20,\"startDate\":\"2027-06-01\",\"compensationType\":\"HOURLY\"}],\"regularHoursPerWeek\":[],\"currency\":{\"currencySymbol\":\"$\",\"currencyName\":\"United States Dollar\",\"currencyCountry\":\"US\",\"currencyCode\":\"USD\"},\"overtimes\":[],\"employeeType\":\"EMPLOYEE\",\"employeeId\":\"0b5cfcca-6ddd-459b-88b6-5375a9a75467\",\"firstName\":\"Raghu Nath\",\"lastName\":\"Katariya\",\"approvedExpenses\":[],\"totalApprovedExpenses\":0,\"approvedAllowances\":[],\"totalApprovedAllowances\":0,\"reimbursement\":0,\"compensationAmount\":20,\"compensationType\":\"HOURLY\",\"payrollStatus\":\"DRAFT\",\"baseSalary\":3466.6,\"regularHours\":173.33,\"hourlyRate\":20,\"prorated\":false,\"payBy\":\"DIRECT_DEPOSIT\",\"payByOptions\":[\"DIRECT_DEPOSIT\"],\"payDate\":\"2027-07-02\",\"startDate\":\"2027-06-01\",\"endDate\":\"2027-06-30\",\"homeAddress\":{\"zipcode\":\"11228\",\"country\":{\"name\":\"United States\",\"iso2\":\"US\"},\"state\":{\"name\":\"New York\",\"iso2\":\"NY\"},\"locationCodeDetails\":{\"locationCode\":\"36-047-975772\",\"locationCodeFull\":\"STATE:36-CNTY:047-CITY:975772\",\"jurisdictions\":[{\"name\":\"New York\",\"steCodeType\":\"CITY\",\"steCode\":\"975772\"},{\"name\":\"Kings\",\"steCodeType\":\"CNTY\",\"steCode\":\"047\"},{\"name\":\"New York\",\"steCodeType\":\"STATE\",\"steCode\":\"36\"}]},\"addressLine1\":\"8787 Bald Hill LaneBrooklyn, NY 11228\",\"city\":\"NY\"},\"companyAddress\":{\"zipcode\":\"10003\",\"country\":{\"name\":\"United States\",\"iso2\":\"US\"},\"state\":{\"name\":\"New York\",\"iso2\":\"NY\"},\"addressLine1\":\"242 Greene St, New York, NY 10003, USA\",\"city\":\"New York\"},\"payrollCycle\":\"REGULAR\",\"offCyclePaymentOption\":\"FULL_PAYMENT\",\"workState\":{\"name\":\"New York\",\"iso2\":\"NY\"},\"rateCode\":{\"description\":\"Unknown\",\"policyFee\":0,\"rateCode\":\"9999\",\"year\":\"2026\",\"invoiceRate\":0},\"isPartnerOrOwner\":false,\"isGarnishmentSkipped\":false,\"hasTimesheet\":false,\"payFrequency\":\"MONTHLY\",\"weekStartDate\":\"2027-05-30\",\"timeOff\":[],\"totalTimeOffHours\":0},{\"grossPay\":7626.52,\"totalPay\":7626.52,\"additionalEarnings\":[],\"customEarnings\":[],\"totalAdditionalEarnings\":0,\"totalCustomEarnings\":0,\"benefits\":[],\"salaryBreakdown\":[{\"endDate\":\"2027-06-30\",\"compensationAmount\":44,\"businessDays\":22,\"baseSalary\":7626.52,\"regularHours\":173.33,\"hourlyRate\":44,\"startDate\":\"2027-06-01\",\"compensationType\":\"HOURLY\"}],\"regularHoursPerWeek\":[],\"currency\":{\"currencySymbol\":\"$\",\"currencyName\":\"United States Dollar\",\"currencyCountry\":\"US\",\"currencyCode\":\"USD\"},\"overtimes\":[],\"employeeType\":\"EMPLOYEE\",\"employeeId\":\"6d18d73a-5bbd-4f98-9885-c597fc835551\",\"firstName\":\"Employee\",\"lastName\":\"Timetools\",\"approvedExpenses\":[],\"totalApprovedExpenses\":0,\"approvedAllowances\":[],\"totalApprovedAllowances\":0,\"reimbursement\":0,\"compensationAmount\":44,\"compensationType\":\"HOURLY\",\"payrollStatus\":\"DRAFT\",\"baseSalary\":7626.52,\"regularHours\":173.33,\"hourlyRate\":44,\"prorated\":false,\"payBy\":\"DIRECT_DEPOSIT\",\"payByOptions\":[\"DIRECT_DEPOSIT\"],\"payDate\":\"2027-07-02\",\"startDate\":\"2027-06-01\",\"endDate\":\"2027-06-30\",\"homeAddress\":{\"zipcode\":\"90001\",\"country\":{\"name\":\"United States\",\"iso2\":\"US\"},\"state\":{\"name\":\"California\",\"iso2\":\"CA\"},\"locationCodeDetails\":{\"locationCode\":\"06-037-2408218\",\"locationCodeFull\":\"STATE:06-CNTY:037-CITY:2408218\",\"jurisdictions\":[{\"name\":\"Florence-Graham\",\"steCodeType\":\"CITY\",\"steCode\":\"2408218\"},{\"name\":\"Los Angeles\",\"steCodeType\":\"CNTY\",\"steCode\":\"037\"},{\"name\":\"California\",\"steCodeType\":\"STATE\",\"steCode\":\"06\"}]},\"addressLine1\":\"CA\",\"city\":\"CA\"},\"companyAddress\":{\"zipcode\":\"10003\",\"country\":{\"name\":\"United States\",\"iso2\":\"US\"},\"state\":{\"name\":\"New York\",\"iso2\":\"NY\"},\"addressLine1\":\"242 Greene St, New York, NY 10003, USA\",\"city\":\"New York\"},\"payrollCycle\":\"REGULAR\",\"offCyclePaymentOption\":\"FULL_PAYMENT\",\"workState\":{\"name\":\"California\",\"iso2\":\"CA\"},\"isPartnerOrOwner\":false,\"isGarnishmentSkipped\":false,\"hasTimesheet\":false,\"payFrequency\":\"MONTHLY\",\"weekStartDate\":\"2027-05-30\",\"timeOff\":[],\"totalTimeOffHours\":0}],\"cryptoPaymentDetail\":{}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://3bfw2l0lig.execute-api.us-east-1.amazonaws.com/qa/payroll/ae312d1c-95c7-4eec-9c21-ed1b843ee127/employer/a252c7be-8259-4eb9-9d14-cdb75eace075"
+					},
+					"response": []
+				}
+			],
+			"id": "04332054-2ccf-444e-9bf4-f43a0b118e29"
+		},
+		{
+			"name": "Employee",
+			"item": [
+				{
+					"name": "Active",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "755559aa-b1cd-4282-bb89-7e7fbd52296d",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// 1. Parse the JSON response",
+									"const json = pm.response.json();",
+									"",
+									"// 2. Access the data array",
+									"const dataList = json.data;",
+									"",
+									"if (Array.isArray(dataList)) {",
+									"    // 3. Count how many items contain an 'employer_id'",
+									"    const employerIdCount = dataList.filter(item => item.employer_id).length;",
+									"    ",
+									"    // 4. Create the formatted result message",
+									"    const resultMessage = \"Total Employer IDs :- \" + employerIdCount;",
+									"",
+									"    // 5. Run the Postman Test",
+									"    pm.test(resultMessage, function () {",
+									"        pm.expect(employerIdCount).to.be.a(\"number\");",
+									"        pm.expect(employerIdCount).to.be.at.least(1, \"No employer IDs found\");",
+									"    });",
+									"",
+									"    // 6. Log and save to environment",
+									"    console.log(resultMessage);",
+									"    pm.environment.set(\"total_employer_count\", employerIdCount);",
+									"",
+									"} else {",
+									"    pm.test(\"Error: 'data' is not an array\", function () {",
+									"        pm.expect.fail(\"Expected an array in json.data\");",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "56b63af6-4d07-4611-97e0-fe5a89e1d3c1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json; charset=UTF-8"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"employeeType\":\"ALL\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://nvvbbcice1.execute-api.us-east-1.amazonaws.com/qa/employer/{{employer_id}}/employees?status=ONBOARDED",
+							"protocol": "https",
+							"host": [
+								"nvvbbcice1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"qa",
+								"employer",
+								"{{employer_id}}",
+								"employees"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "ONBOARDED"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Onboarding",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b3b2269c-35a1-472d-9d8e-69433b19380e",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// 1. Parse the JSON response",
+									"const json = pm.response.json();",
+									"",
+									"// 2. Access the data array",
+									"const dataList = json.data;",
+									"",
+									"if (Array.isArray(dataList)) {",
+									"    // 3. Count how many items contain an 'employer_id'",
+									"    const employerIdCount = dataList.filter(item => item.employer_id).length;",
+									"    ",
+									"    // 4. Create the formatted result message",
+									"    const resultMessage = \"Total Employer IDs :- \" + employerIdCount;",
+									"",
+									"    // 5. Run the Postman Test",
+									"    pm.test(resultMessage, function () {",
+									"        pm.expect(employerIdCount).to.be.a(\"number\");",
+									"        pm.expect(employerIdCount).to.be.at.least(1, \"No employer IDs found\");",
+									"    });",
+									"",
+									"    // 6. Log and save to environment",
+									"    console.log(resultMessage);",
+									"    pm.environment.set(\"total_employer_count\", employerIdCount);",
+									"",
+									"} else {",
+									"    pm.test(\"Error: 'data' is not an array\", function () {",
+									"        pm.expect.fail(\"Expected an array in json.data\");",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "ba400f61-678e-4525-a145-50c3662c6e47",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json; charset=UTF-8"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"employeeType\":\"ALL\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://nvvbbcice1.execute-api.us-east-1.amazonaws.com/qa/employer/{{employer_id}}/employees?status=PENDING",
+							"protocol": "https",
+							"host": [
+								"nvvbbcice1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"qa",
+								"employer",
+								"{{employer_id}}",
+								"employees"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "PENDING"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Off Boarding",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cd5371ac-a2d6-4290-9d6b-bd58aa164e44",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"const json = pm.response.json();",
+									"const allEmployees = json.data?.items || json.data;",
+									"",
+									"if (Array.isArray(allEmployees)) {",
+									"    // 1. Filter the list to find only those who are OFFBOARDING",
+									"    const offboardingList = allEmployees.filter(emp => emp.status === \"OFFBOARDING\");",
+									"    const count = offboardingList.length;",
+									"",
+									"    // 2. Updated Test: Verify the count instead of just the first record",
+									"    pm.test(\"Total Offboarding Records Found :- \" + count, function () {",
+									"        pm.expect(count).to.be.at.least(0); ",
+									"    });",
+									"",
+									"    // 3. If any were found, verify they are correct and save the ID",
+									"    if (count > 0) {",
+									"        pm.test(\"Verify filtered records have correct status\", function() {",
+									"            pm.expect(offboardingList[0].status).to.equal(\"OFFBOARDING\");",
+									"        });",
+									"",
+									"        // Save the first available OFFBOARDING ID for your next API call",
+									"        pm.environment.set(\"offboarding_record_id\", offboardingList[0].record_id);",
+									"        console.log(\"Success! Found \" + count + \" records. Saved ID: \" + offboardingList[0].record_id);",
+									"    } else {",
+									"        console.warn(\"No 'OFFBOARDING' records exist in the current response.\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "34a094a8-20bf-4037-9d02-bc0d5d53b563",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json; charset=UTF-8"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://nvvbbcice1.execute-api.us-east-1.amazonaws.com/qa/employer/{{employer_id}}/employees?employeeType=ALL",
+							"protocol": "https",
+							"host": [
+								"nvvbbcice1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"qa",
+								"employer",
+								"{{employer_id}}",
+								"employees"
+							],
+							"query": [
+								{
+									"key": "employeeType",
+									"value": "ALL"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "e1229f9e-0b10-4b36-afc0-971a05a9b82b"
+		},
+		{
+			"name": "Contracts",
+			"item": [
+				{
+					"name": "Contracts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7e36ca70-1995-45e3-b730-b7f6c03dfec2",
+								"exec": [
+									"// 1. Test for Status Code 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// 2. Get and display the Response Time",
+									"// pm.response.responseTime returns the time in milliseconds",
+									"const responseTime = pm.response.responseTime;",
+									"",
+									"pm.test(\"Response time is \" + responseTime + \"ms\", function () {",
+									"    // Optional: Pass only if response is under a certain limit (e.g., 1000ms)",
+									"    pm.expect(responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// 3. Log to Console for visibility",
+									"console.log(\"Status Code: \" + pm.response.code);",
+									"console.log(\"Response Time: \" + responseTime + \"ms\");",
+									"",
+									"// 1. Parse the JSON response",
+									"const json = pm.response.json();",
+									"",
+									"// 2. Access the items array",
+									"const contractList = json.data?.items;",
+									"",
+									"if (Array.isArray(contractList)) {",
+									"    // 3. Count how many items contain a 'contract_id'",
+									"    const contractCount = contractList.filter(item => item.contract_id).length;",
+									"    ",
+									"    // 4. Create the formatted result message",
+									"    const resultMessage = \"Total Contracts :- \" + contractCount;",
+									"",
+									"    // 5. Run the Postman Test",
+									"    pm.test(resultMessage, function () {",
+									"        pm.expect(contractCount).to.be.a(\"number\");",
+									"        pm.expect(contractCount).to.be.at.least(1, \"No contracts found in the list\");",
+									"    });",
+									"",
+									"    // 6. Log and save to environment",
+									"    console.log(resultMessage);",
+									"    pm.environment.set(\"total_contract_count\", contractCount);",
+									"",
+									"    // Save the first contract_id for the next request",
+									"    if (contractCount > 0) {",
+									"        pm.environment.set(\"current_contract_id\", contractList[0].contract_id);",
+									"    }",
+									"",
+									"} else {",
+									"    pm.test(\"Error: 'data.items' is not an array\", function () {",
+									"        pm.expect.fail(\"Check the API response structure.\");",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "77729211-ba20-4432-812f-43bb35dd14d5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "accept-language",
+								"value": "en-US,en;q=0.9"
+							},
+							{
+								"key": "authorization",
+								"value": "{\"token\":\"{{id_token}}\",\"context\":{\"roleId\":\"{{role_id}}\"}}"
+							},
+							{
+								"key": "origin",
+								"value": "https://www.qa.niural.com"
+							},
+							{
+								"key": "priority",
+								"value": "u=1, i"
+							},
+							{
+								"key": "referer",
+								"value": "https://www.qa.niural.com/"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "sec-fetch-dest",
+								"value": "empty"
+							},
+							{
+								"key": "sec-fetch-mode",
+								"value": "cors"
+							},
+							{
+								"key": "sec-fetch-site",
+								"value": "cross-site"
+							},
+							{
+								"key": "user-agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+							}
+						],
+						"url": "https://q6iy3e4rdf.execute-api.us-east-1.amazonaws.com/qa/contracts"
+					},
+					"response": []
+				}
+			],
+			"id": "fb0cbf94-7e0e-4c48-a169-365316058724"
+		}
+	]
+}
